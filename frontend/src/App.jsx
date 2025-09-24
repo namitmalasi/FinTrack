@@ -5,8 +5,8 @@ import {
   Route,
   Navigate,
 } from "react-router-dom";
-import { AuthProvider } from "./context/AuthContext.jsx";
-import { useAuth } from "./context/AuthContext.jsx";
+import { AuthProvider } from "./context/AuthContext.js";
+import { useAuth } from "./context/AuthContext.js";
 import Navbar from "./components/common/Navbar.jsx";
 import Login from "./pages/Login.jsx";
 import Register from "./pages/Register.jsx";
