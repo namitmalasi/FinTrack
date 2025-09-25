@@ -1,6 +1,6 @@
 // frontend/src/context/AuthContext.js
 import React, { createContext, useContext, useReducer, useEffect } from "react";
-import { authService } from "../services/authService";
+import { authService } from "../services/authService.js";
 
 const AuthContext = createContext();
 
@@ -101,6 +101,7 @@ export const AuthProvider = ({ children }) => {
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {

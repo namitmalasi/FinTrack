@@ -5,8 +5,8 @@ import {
   Route,
   Navigate,
 } from "react-router-dom";
-import { AuthProvider } from "./context/AuthContext.js";
-import { useAuth } from "./context/AuthContext.js";
+import { AuthProvider } from "./context/AuthContext.jsx";
+import { useAuth } from "./context/AuthContext.jsx";
 import Navbar from "./components/common/Navbar.jsx";
 import Login from "./pages/Login.jsx";
 import Register from "./pages/Register.jsx";
@@ -39,7 +39,7 @@ const PublicRoute = ({ children }) => {
 
 function AppContent() {
   const { loading } = useAuth();
-  
+
   if (loading) {
     return <LoadingSpinner />;
   }
@@ -49,44 +49,65 @@ function AppContent() {
       <main className="container mx-auto px-4 py-8">
         <Routes>
           {/* Public Routes */}
-          <Route path="/login" element={
-            <PublicRoute>
-              <Login />
-            </PublicRoute>
-          } />
-          <Route path="/register" element={
-            <PublicRoute>
-              <Register />
-            </PublicRoute>
-          } />
-          
+          <Route
+            path="/login"
+            element={
+              <PublicRoute>
+                <Login />
+              </PublicRoute>
+            }
+          />
+          <Route
+            path="/register"
+            element={
+              <PublicRoute>
+                <Register />
+              </PublicRoute>
+            }
+          />
+
           {/* Protected Routes */}
-          <Route path="/dashboard" element={
-            <ProtectedRoute>
-              <Dashboard />
-            </ProtectedRoute>
-          } />
-          <Route path="/expenses" element={
-            <ProtectedRoute>
-              <Expenses />
-            </ProtectedRoute>
-          } />
-          <Route path="/budgets" element={
-            <ProtectedRoute>
-              <Budgets />
-            </ProtectedRoute>
-          } />
-          <Route path="/analytics" element={
-            <ProtectedRoute>
-              <Analytics />
-            </ProtectedRoute>
-          } />
-          <Route path="/calculators" element={
-            <ProtectedRoute>
-              <Calculators />
-            </ProtectedRoute>
-          } />
-          
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/expenses"
+            element={
+              <ProtectedRoute>
+                <Expenses />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/budgets"
+            element={
+              <ProtectedRoute>
+                <Budgets />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/analytics"
+            element={
+              <ProtectedRoute>
+                <Analytics />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/calculators"
+            element={
+              <ProtectedRoute>
+                <Calculators />
+              </ProtectedRoute>
+            }
+          />
+
           {/* Default Route */}
           <Route path="/" element={<Navigate to="/dashboard" />} />
           <Route path="*" element={<Navigate to="/dashboard" />} />
@@ -97,7 +118,7 @@ function AppContent() {
 }
 
 export default function App() {
- return (
+  return (
     <AuthProvider>
       <Router>
         <AppContent />
@@ -105,4 +126,3 @@ export default function App() {
     </AuthProvider>
   );
 }
-
