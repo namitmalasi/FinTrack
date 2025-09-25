@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "start": "node server.js",
-    "dev": "noemon server.js"
+    "dev": "nodemon server.js"
   },
   "keywords": [],
   "author": "",
