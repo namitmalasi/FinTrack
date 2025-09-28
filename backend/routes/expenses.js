@@ -4,7 +4,7 @@ import auth from "../middleware/auth.js";
 
 const router = express.Router();
 
-/ @desc    Get all expenses for user
+//@desc    Get all expenses for user
 // @route   GET /api/expenses
 // @access  Private
 router.get('/', auth, async (req, res) => {
