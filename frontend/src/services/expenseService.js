@@ -12,6 +12,17 @@ export const expenseService = {
     }
   },
 
+  getExpenseById: async (id) => {
+    try {
+      const response = await api.get(`/expenses/${id}`);
+      return response.data;
+    } catch (error) {
+      throw new Error(
+        error.response?.data?.message || "Failed to fetch expense"
+      );
+    }
+  },
+
   createExpense: async (expenseData) => {
     try {
       const response = await api.post("/expenses", expenseData);
@@ -47,11 +58,24 @@ export const expenseService = {
 
   getCategories: async () => {
     try {
-      const response = await api.get("/expenses/categories");
+      const response = await api.get("/expenses/categories/list");
       return response.data;
     } catch (error) {
       throw new Error(
         error.response?.data?.message || "Failed to fetch categories"
+      );
+    }
+  },
+
+  getAnalytics: async (period = "month") => {
+    try {
+      const response = await api.get(
+        `/expenses/analytics/summary?period=${period}`
+      );
+      return response.data;
+    } catch (error) {
+      throw new Error(
+        error.response?.data?.message || "Failed to fetch analytics"
       );
     }
   },
