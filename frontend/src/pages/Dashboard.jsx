@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { useExpenses } from "../context/ExpenseContext";
+import { useExpenses } from "../context/ExpenseContext.jsx";
 import { useBudgets } from "../context/BudgetContext";
 import LoadingSpinner from "../components/common/LoadingSpinner";
 import Alert from "../components/common/Alert";

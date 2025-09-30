@@ -1,5 +1,10 @@
-import { createContext, useContext, useReducer } from "react";
-import expenseService from "../services/expenseService";
+import React, {
+  createContext,
+  useContext,
+  useReducer,
+  useCallback,
+} from "react";
+import { expenseService } from "../services/expenseService";
 
 const ExpenseContext = createContext();
 
@@ -63,81 +68,96 @@ const initialState = {
 export const ExpenseProvider = ({ children }) => {
   const [state, dispatch] = useReducer(expenseReducer, initialState);
 
-  const setLoading = (loading) => {
+  const setLoading = useCallback((loading) => {
     dispatch({ type: "SET_LOADING", payload: loading });
-  };
+  }, []);
 
-  const setError = (error) => {
+  const setError = useCallback((error) => {
     dispatch({ type: "SET_ERROR", payload: error });
-  };
+  }, []);
 
-  const clearError = () => {
+  const clearError = useCallback(() => {
     dispatch({ type: "CLEAR_ERROR" });
-  };
+  }, []);
 
-  const getExpenses = async (filters = {}) => {
-    try {
-      setLoading(true);
-      const response = await expenseService.getExpenses(filters);
-      dispatch({ type: "SET_EXPENSES", payload: response.data });
-    } catch (error) {
-      setError(error.message);
-    }
-  };
+  const getExpenses = useCallback(
+    async (filters = {}) => {
+      try {
+        setLoading(true);
+        const response = await expenseService.getExpenses(filters);
+        dispatch({ type: "SET_EXPENSES", payload: response.data });
+      } catch (error) {
+        setError(error.message);
+      }
+    },
+    [setLoading, setError]
+  );
 
-  const createExpense = async (expenseData) => {
-    try {
-      setLoading(true);
-      const response = await expenseService.createExpense(expenseData);
-      dispatch({ type: "ADD_EXPENSE", payload: response.data });
-      return response;
-    } catch (error) {
-      setError(error.message);
-      throw error;
-    }
-  };
+  const createExpense = useCallback(
+    async (expenseData) => {
+      try {
+        setLoading(true);
+        const response = await expenseService.createExpense(expenseData);
+        dispatch({ type: "ADD_EXPENSE", payload: response.data });
+        return response;
+      } catch (error) {
+        setError(error.message);
+        throw error;
+      }
+    },
+    [setLoading, setError]
+  );
 
-  const updateExpense = async (id, expenseData) => {
-    try {
-      setLoading(true);
-      const response = await expenseService.updateExpense(id, expenseData);
-      dispatch({ type: "UPDATE_EXPENSE", payload: response.data });
-      return response;
-    } catch (error) {
-      setError(error.message);
-      throw error;
-    }
-  };
+  const updateExpense = useCallback(
+    async (id, expenseData) => {
+      try {
+        setLoading(true);
+        const response = await expenseService.updateExpense(id, expenseData);
+        dispatch({ type: "UPDATE_EXPENSE", payload: response.data });
+        return response;
+      } catch (error) {
+        setError(error.message);
+        throw error;
+      }
+    },
+    [setLoading, setError]
+  );
 
-  const deleteExpense = async (id) => {
-    try {
-      setLoading(true);
-      await expenseService.deleteExpense(id);
-      dispatch({ type: "DELETE_EXPENSE", payload: id });
-    } catch (error) {
-      setError(error.message);
-      throw error;
-    }
-  };
+  const deleteExpense = useCallback(
+    async (id) => {
+      try {
+        setLoading(true);
+        await expenseService.deleteExpense(id);
+        dispatch({ type: "DELETE_EXPENSE", payload: id });
+      } catch (error) {
+        setError(error.message);
+        throw error;
+      }
+    },
+    [setLoading, setError]
+  );
 
-  const getCategories = async () => {
+  const getCategories = useCallback(async () => {
     try {
       const response = await expenseService.getCategories();
       dispatch({ type: "SET_CATEGORIES", payload: response.data });
     } catch (error) {
       setError(error.message);
     }
-  };
+  }, [setError]);
 
-  const getAnalytics = async (period = "month") => {
-    try {
-      setLoading(true);
-      const response = await expenseService.getAnalytics(period);
-      dispatch({ type: "SET_ANALYTICS", payload: response.data });
-    } catch (error) {
-      setError(error.message);
-    }
-  };
+  const getAnalytics = useCallback(
+    async (period = "month") => {
+      try {
+        setLoading(true);
+        const response = await expenseService.getAnalytics(period);
+        dispatch({ type: "SET_ANALYTICS", payload: response.data });
+      } catch (error) {
+        setError(error.message);
+      }
+    },
+    [setLoading, setError]
+  );
 
   const value = {
     expenses: state.expenses,
@@ -161,6 +181,7 @@ export const ExpenseProvider = ({ children }) => {
   );
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useExpenses = () => {
   const context = useContext(ExpenseContext);
   if (!context) {

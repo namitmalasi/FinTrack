@@ -1,5 +1,5 @@
-import { createContext, useContext, useReducer } from "react";
-import budgetService from "../services/budgetService";
+import React, { createContext, useContext, useReducer } from "react";
+import { budgetService } from "../services/budgetService";
 
 const BudgetContext = createContext();
 
@@ -151,6 +151,7 @@ export const BudgetProvider = ({ children }) => {
   );
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useBudgets = () => {
   const context = useContext(BudgetContext);
   if (!context) {

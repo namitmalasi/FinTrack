@@ -5,8 +5,8 @@ import {
   Route,
   Navigate,
 } from "react-router-dom";
-import { AuthProvider } from "./context/AuthContext.js";
-import { useAuth } from "./context/AuthContext.js";
+import { AuthProvider } from "./context/AuthContext.jsx";
+import { useAuth } from "./context/AuthContext.jsx";
 import Navbar from "./components/common/Navbar.jsx";
 import Login from "./pages/Login.jsx";
 import Register from "./pages/Register.jsx";
@@ -16,7 +16,10 @@ import Budgets from "./pages/Budgets.jsx";
 import Analytics from "./pages/Analytics.jsx";
 import Calculators from "./pages/Calculators.jsx";
 import LoadingSpinner from "./components/common/LoadingSpinner.jsx";
+import { ExpenseProvider } from "./context/ExpenseContext.jsx";
+import { BudgetProvider } from "./context/BudgetContext.jsx";
 
+// Protected Route Component
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useAuth();
 
@@ -27,6 +30,7 @@ const ProtectedRoute = ({ children }) => {
   return user ? children : <Navigate to="/login" />;
 };
 
+// Public Route Component (redirect to dashboard if logged in)
 const PublicRoute = ({ children }) => {
   const { user, loading } = useAuth();
 
@@ -37,16 +41,28 @@ const PublicRoute = ({ children }) => {
   return !user ? children : <Navigate to="/dashboard" />;
 };
 
+// Protected Layout with Contexts
+const ProtectedLayout = ({ children }) => {
+  return (
+    <ProtectedRoute>
+      <ExpenseProvider>
+        <BudgetProvider>{children}</BudgetProvider>
+      </ExpenseProvider>
+    </ProtectedRoute>
+  );
+};
+
 function AppContent() {
-  const { loading } = useAuth();
+  const { loading, user } = useAuth();
 
   if (loading) {
     return <LoadingSpinner />;
   }
+
   return (
     <div className="min-h-screen bg-gray-50">
-      <Navbar />
-      <main className="container mx-auto px-4 py-8">
+      {user && <Navbar />}
+      <main className={`container mx-auto px-4 ${user ? "py-8" : ""}`}>
         <Routes>
           {/* Public Routes */}
           <Route
@@ -70,33 +86,33 @@ function AppContent() {
           <Route
             path="/dashboard"
             element={
-              <ProtectedRoute>
+              <ProtectedLayout>
                 <Dashboard />
-              </ProtectedRoute>
+              </ProtectedLayout>
             }
           />
           <Route
             path="/expenses"
             element={
-              <ProtectedRoute>
+              <ProtectedLayout>
                 <Expenses />
-              </ProtectedRoute>
+              </ProtectedLayout>
             }
           />
           <Route
             path="/budgets"
             element={
-              <ProtectedRoute>
+              <ProtectedLayout>
                 <Budgets />
-              </ProtectedRoute>
+              </ProtectedLayout>
             }
           />
           <Route
             path="/analytics"
             element={
-              <ProtectedRoute>
+              <ProtectedLayout>
                 <Analytics />
-              </ProtectedRoute>
+              </ProtectedLayout>
             }
           />
           <Route
@@ -117,7 +133,7 @@ function AppContent() {
   );
 }
 
-export default function App() {
+function App() {
   return (
     <AuthProvider>
       <Router>
@@ -126,3 +142,5 @@ export default function App() {
     </AuthProvider>
   );
 }
+
+export default App;

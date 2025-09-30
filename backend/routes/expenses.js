@@ -7,7 +7,7 @@ const router = express.Router();
 //@desc    Get all expenses for user
 // @route   GET /api/expenses
 // @access  Private
-router.get('/', auth, async (req, res) => {
+router.get("/", auth, async (req, res) => {
   try {
     const {
       category,
@@ -15,14 +15,14 @@ router.get('/', auth, async (req, res) => {
       endDate,
       limit = 50,
       page = 1,
-      sortBy = 'date',
-      sortOrder = 'desc'
+      sortBy = "date",
+      sortOrder = "desc",
     } = req.query;
 
     // Build filter object
     const filter = { user: req.user._id };
 
-    if (category && category !== 'all') {
+    if (category && category !== "all") {
       filter.category = category;
     }
 
@@ -37,7 +37,7 @@ router.get('/', auth, async (req, res) => {
 
     // Sort configuration
     const sortConfig = {};
-    sortConfig[sortBy] = sortOrder === 'desc' ? -1 : 1;
+    sortConfig[sortBy] = sortOrder === "desc" ? -1 : 1;
 
     // Execute query
     const expenses = await Expense.find(filter)
@@ -52,7 +52,7 @@ router.get('/', auth, async (req, res) => {
     // Calculate summary
     const totalAmount = await Expense.aggregate([
       { $match: filter },
-      { $group: { _id: null, total: { $sum: '$amount' } } }
+      { $group: { _id: null, total: { $sum: "$amount" } } },
     ]);
 
     res.json({
@@ -64,48 +64,48 @@ router.get('/', auth, async (req, res) => {
           totalPages,
           totalExpenses,
           hasNext: parseInt(page) < totalPages,
-          hasPrev: parseInt(page) > 1
+          hasPrev: parseInt(page) > 1,
         },
         summary: {
           totalAmount: totalAmount[0]?.total || 0,
-          count: expenses.length
-        }
-      }
+          count: expenses.length,
+        },
+      },
     });
   } catch (error) {
-    console.error('Get expenses error:', error.message);
-    res.status(500).json({ message: 'Server error' });
+    console.error("Get expenses error:", error.message);
+    res.status(500).json({ message: "Server error" });
   }
 });
 
 // @desc    Get expense by ID
 // @route   GET /api/expenses/:id
 // @access  Private
-router.get('/:id', auth, async (req, res) => {
+router.get("/:id", auth, async (req, res) => {
   try {
     const expense = await Expense.findOne({
       _id: req.params.id,
-      user: req.user._id
+      user: req.user._id,
     });
 
     if (!expense) {
-      return res.status(404).json({ message: 'Expense not found' });
+      return res.status(404).json({ message: "Expense not found" });
     }
 
     res.json({
       success: true,
-      data: expense
+      data: expense,
     });
   } catch (error) {
-    console.error('Get expense error:', error.message);
-    res.status(500).json({ message: 'Server error' });
+    console.error("Get expense error:", error.message);
+    res.status(500).json({ message: "Server error" });
   }
 });
 
 // @desc    Create new expense
 // @route   POST /api/expenses
 // @access  Private
-router.post('/', auth, async (req, res) => {
+router.post("/", auth, async (req, res) => {
   try {
     const {
       amount,
@@ -114,19 +114,19 @@ router.post('/', auth, async (req, res) => {
       date,
       isRecurring,
       recurringPeriod,
-      tags
+      tags,
     } = req.body;
 
     // Validation
     if (!amount || !category || !description) {
       return res.status(400).json({
-        message: 'Amount, category, and description are required'
+        message: "Amount, category, and description are required",
       });
     }
 
     if (amount <= 0) {
       return res.status(400).json({
-        message: 'Amount must be greater than 0'
+        message: "Amount must be greater than 0",
       });
     }
 
@@ -139,28 +139,28 @@ router.post('/', auth, async (req, res) => {
       date: date ? new Date(date) : new Date(),
       isRecurring: isRecurring || false,
       recurringPeriod: isRecurring ? recurringPeriod : undefined,
-      tags: tags || []
+      tags: tags || [],
     });
 
     res.status(201).json({
       success: true,
       data: expense,
-      message: 'Expense created successfully'
+      message: "Expense created successfully",
     });
   } catch (error) {
-    console.error('Create expense error:', error.message);
-    if (error.name === 'ValidationError') {
-      const errors = Object.values(error.errors).map(err => err.message);
-      return res.status(400).json({ message: errors.join(', ') });
+    console.error("Create expense error:", error.message);
+    if (error.name === "ValidationError") {
+      const errors = Object.values(error.errors).map((err) => err.message);
+      return res.status(400).json({ message: errors.join(", ") });
     }
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: "Server error" });
   }
 });
 
 // @desc    Update expense
 // @route   PUT /api/expenses/:id
 // @access  Private
-router.put('/:id', auth, async (req, res) => {
+router.put("/:id", auth, async (req, res) => {
   try {
     const {
       amount,
@@ -169,22 +169,24 @@ router.put('/:id', auth, async (req, res) => {
       date,
       isRecurring,
       recurringPeriod,
-      tags
+      tags,
     } = req.body;
 
     let expense = await Expense.findOne({
       _id: req.params.id,
-      user: req.user._id
+      user: req.user._id,
     });
 
     if (!expense) {
-      return res.status(404).json({ message: 'Expense not found' });
+      return res.status(404).json({ message: "Expense not found" });
     }
 
     // Update fields
     if (amount !== undefined) {
       if (amount <= 0) {
-        return res.status(400).json({ message: 'Amount must be greater than 0' });
+        return res
+          .status(400)
+          .json({ message: "Amount must be greater than 0" });
       }
       expense.amount = parseFloat(amount);
     }
@@ -200,63 +202,63 @@ router.put('/:id', auth, async (req, res) => {
     res.json({
       success: true,
       data: expense,
-      message: 'Expense updated successfully'
+      message: "Expense updated successfully",
     });
   } catch (error) {
-    console.error('Update expense error:', error.message);
-    if (error.name === 'ValidationError') {
-      const errors = Object.values(error.errors).map(err => err.message);
-      return res.status(400).json({ message: errors.join(', ') });
+    console.error("Update expense error:", error.message);
+    if (error.name === "ValidationError") {
+      const errors = Object.values(error.errors).map((err) => err.message);
+      return res.status(400).json({ message: errors.join(", ") });
     }
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: "Server error" });
   }
 });
 
 // @desc    Delete expense
 // @route   DELETE /api/expenses/:id
 // @access  Private
-router.delete('/:id', auth, async (req, res) => {
+router.delete("/:id", auth, async (req, res) => {
   try {
     const expense = await Expense.findOne({
       _id: req.params.id,
-      user: req.user._id
+      user: req.user._id,
     });
 
     if (!expense) {
-      return res.status(404).json({ message: 'Expense not found' });
+      return res.status(404).json({ message: "Expense not found" });
     }
 
     await expense.deleteOne();
 
     res.json({
       success: true,
-      message: 'Expense deleted successfully'
+      message: "Expense deleted successfully",
     });
   } catch (error) {
-    console.error('Delete expense error:', error.message);
-    res.status(500).json({ message: 'Server error' });
+    console.error("Delete expense error:", error.message);
+    res.status(500).json({ message: "Server error" });
   }
 });
 
 // @desc    Get expense analytics
 // @route   GET /api/expenses/analytics
 // @access  Private
-router.get('/analytics/summary', auth, async (req, res) => {
+router.get("/analytics/summary", auth, async (req, res) => {
   try {
-    const { period = 'month' } = req.query;
-    
+    const { period = "month" } = req.query;
+
     // Calculate date range based on period
     const now = new Date();
     let startDate;
-    
+
     switch (period) {
-      case 'week':
+      case "week":
         startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
         break;
-      case 'month':
+      case "month":
         startDate = new Date(now.getFullYear(), now.getMonth(), 1);
         break;
-      case 'year':
+      case "year":
         startDate = new Date(now.getFullYear(), 0, 1);
         break;
       default:
@@ -266,7 +268,7 @@ router.get('/analytics/summary', auth, async (req, res) => {
     // Get expenses for the period
     const expenses = await Expense.find({
       user: req.user._id,
-      date: { $gte: startDate, $lte: now }
+      date: { $gte: startDate, $lte: now },
     });
 
     // Calculate totals by category
@@ -277,14 +279,19 @@ router.get('/analytics/summary', auth, async (req, res) => {
 
     // Calculate daily spending for the period
     const dailySpending = expenses.reduce((acc, expense) => {
-      const dateKey = expense.date.toISOString().split('T')[0];
+      const dateKey = expense.date.toISOString().split("T")[0];
       acc[dateKey] = (acc[dateKey] || 0) + expense.amount;
       return acc;
     }, {});
 
     // Calculate total and average
-    const totalAmount = expenses.reduce((sum, expense) => sum + expense.amount, 0);
-    const averagePerDay = totalAmount / Math.max(1, Math.ceil((now - startDate) / (1000 * 60 * 60 * 24)));
+    const totalAmount = expenses.reduce(
+      (sum, expense) => sum + expense.amount,
+      0
+    );
+    const averagePerDay =
+      totalAmount /
+      Math.max(1, Math.ceil((now - startDate) / (1000 * 60 * 60 * 24)));
 
     res.json({
       success: true,
@@ -296,42 +303,44 @@ router.get('/analytics/summary', auth, async (req, res) => {
         categoryBreakdown: categoryTotals,
         dailySpending,
         startDate,
-        endDate: now
-      }
+        endDate: now,
+      },
     });
   } catch (error) {
-    console.error('Get analytics error:', error.message);
-    res.status(500).json({ message: 'Server error' });
+    console.error("Get analytics error:", error.message);
+    res.status(500).json({ message: "Server error" });
   }
 });
 
 // @desc    Get available categories
 // @route   GET /api/expenses/categories
 // @access  Private
-router.get('/categories/list', auth, async (req, res) => {
+router.get("/categories/list", auth, async (req, res) => {
   try {
     const categories = [
-      'Food & Dining',
-      'Transportation', 
-      'Entertainment',
-      'Shopping',
-      'Bills & Utilities',
-      'Healthcare',
-      'Education',
-      'Travel',
-      'Home & Garden',
-      'Personal Care',
-      'Gifts & Donations',
-      'Investment',
-      'Other'
+      "Food & Dining",
+      "Transportation",
+      "Entertainment",
+      "Shopping",
+      "Bills & Utilities",
+      "Healthcare",
+      "Education",
+      "Travel",
+      "Home & Garden",
+      "Personal Care",
+      "Gifts & Donations",
+      "Investment",
+      "Other",
     ];
 
     res.json({
       success: true,
-      data: categories
+      data: categories,
     });
   } catch (error) {
-    console.error('Get categories error:', error.message);
-    res.status(500).json({ message: 'Server error' });
+    console.error("Get categories error:", error.message);
+    res.status(500).json({ message: "Server error" });
   }
 });
+
+export default router;

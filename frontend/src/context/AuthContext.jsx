@@ -1,6 +1,12 @@
 // frontend/src/context/AuthContext.js
-import React, { createContext, useContext, useReducer, useEffect } from "react";
-import { authService } from "../services/authService.js";
+import React, {
+  createContext,
+  useContext,
+  useReducer,
+  useEffect,
+  useCallback,
+} from "react";
+import { authService } from "../services/authService";
 
 const AuthContext = createContext();
 
@@ -40,10 +46,14 @@ export const AuthProvider = ({ children }) => {
       if (token) {
         try {
           const userData = await authService.validateToken();
-          dispatch({ type: "LOGIN_SUCCESS", payload: userData });
+          dispatch({
+            type: "LOGIN_SUCCESS",
+            payload: userData.user || userData,
+          });
         } catch (error) {
           localStorage.removeItem("token");
-          dispatch({ type: "LOGIN_FAILURE", payload: "Session expired" });
+          console.log(error);
+          dispatch({ type: "SET_LOADING", payload: false });
         }
       } else {
         dispatch({ type: "SET_LOADING", payload: false });
@@ -51,9 +61,9 @@ export const AuthProvider = ({ children }) => {
     };
 
     checkAuth();
-  }, []);
+  }, []); // Empty dependency array - only run once on mount
 
-  const login = async (email, password) => {
+  const login = useCallback(async (email, password) => {
     dispatch({ type: "LOGIN_START" });
     try {
       const response = await authService.login(email, password);
@@ -64,9 +74,9 @@ export const AuthProvider = ({ children }) => {
       dispatch({ type: "LOGIN_FAILURE", payload: error.message });
       throw error;
     }
-  };
+  }, []);
 
-  const register = async (name, email, password) => {
+  const register = useCallback(async (name, email, password) => {
     dispatch({ type: "LOGIN_START" });
     try {
       const response = await authService.register(name, email, password);
@@ -77,16 +87,16 @@ export const AuthProvider = ({ children }) => {
       dispatch({ type: "LOGIN_FAILURE", payload: error.message });
       throw error;
     }
-  };
+  }, []);
 
-  const logout = () => {
+  const logout = useCallback(() => {
     localStorage.removeItem("token");
     dispatch({ type: "LOGOUT" });
-  };
+  }, []);
 
-  const clearError = () => {
+  const clearError = useCallback(() => {
     dispatch({ type: "CLEAR_ERROR" });
-  };
+  }, []);
 
   const value = {
     user: state.user,
