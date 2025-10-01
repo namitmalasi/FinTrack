@@ -12,12 +12,10 @@ import Login from "./pages/Login.jsx";
 import Register from "./pages/Register.jsx";
 import Dashboard from "./pages/Dashboard.jsx";
 import Expenses from "./pages/Expenses.jsx";
-import Budgets from "./pages/Budgets.jsx";
 import Analytics from "./pages/Analytics.jsx";
 import Calculators from "./pages/Calculators.jsx";
 import LoadingSpinner from "./components/common/LoadingSpinner.jsx";
 import { ExpenseProvider } from "./context/ExpenseContext.jsx";
-import { BudgetProvider } from "./context/BudgetContext.jsx";
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
@@ -46,7 +44,7 @@ const ProtectedLayout = ({ children }) => {
   return (
     <ProtectedRoute>
       <ExpenseProvider>
-        <BudgetProvider>{children}</BudgetProvider>
+        {children}
       </ExpenseProvider>
     </ProtectedRoute>
   );
@@ -99,14 +97,7 @@ function AppContent() {
               </ProtectedLayout>
             }
           />
-          <Route
-            path="/budgets"
-            element={
-              <ProtectedLayout>
-                <Budgets />
-              </ProtectedLayout>
-            }
-          />
+          
           <Route
             path="/analytics"
             element={

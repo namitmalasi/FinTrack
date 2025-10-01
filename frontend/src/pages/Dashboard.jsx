@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useExpenses } from "../context/ExpenseContext.jsx";
-import { useBudgets } from "../context/BudgetContext";
 import LoadingSpinner from "../components/common/LoadingSpinner";
 import Alert from "../components/common/Alert";
 import AddExpenseModal from "../components/Expenses/AddExpenseModal";
@@ -16,29 +15,17 @@ const Dashboard = () => {
     clearError: clearExpenseError,
   } = useExpenses();
 
-  const {
-    analytics: budgetAnalytics,
-    alerts,
-    loading: budgetLoading,
-    error: budgetError,
-    getAnalytics: getBudgetAnalytics,
-    getAlerts,
-    clearError: clearBudgetError,
-  } = useBudgets();
-
   useEffect(() => {
     // Load dashboard data
     getExpenseAnalytics("month");
-    getBudgetAnalytics();
-    getAlerts();
+    // getAlerts();
   }, []);
 
-  const loading = expenseLoading || budgetLoading;
-  const error = expenseError || budgetError;
+  const loading = expenseLoading;
+  const error = expenseError;
 
   const clearError = () => {
     clearExpenseError();
-    clearBudgetError();
   };
 
   const formatCurrency = (amount) => {
@@ -48,19 +35,19 @@ const Dashboard = () => {
     }).format(amount);
   };
 
-  const getPercentageColor = (percentage) => {
-    if (percentage >= 90) return "text-red-600";
-    if (percentage >= 70) return "text-yellow-600";
-    return "text-green-600";
-  };
+  // const getPercentageColor = (percentage) => {
+  //   if (percentage >= 90) return "text-red-600";
+  //   if (percentage >= 70) return "text-yellow-600";
+  //   return "text-green-600";
+  // };
 
-  const getProgressBarColor = (percentage) => {
-    if (percentage >= 90) return "bg-red-500";
-    if (percentage >= 70) return "bg-yellow-500";
-    return "bg-green-500";
-  };
+  // const getProgressBarColor = (percentage) => {
+  //   if (percentage >= 90) return "bg-red-500";
+  //   if (percentage >= 70) return "bg-yellow-500";
+  //   return "bg-green-500";
+  // };
 
-  if (loading && !expenseAnalytics && !budgetAnalytics) {
+  if (loading && !expenseAnalytics) {
     return <LoadingSpinner />;
   }
 
@@ -76,17 +63,6 @@ const Dashboard = () => {
       {error && <Alert type="error" message={error} onClose={clearError} />}
 
       {/* Budget Alerts */}
-      {alerts && alerts.length > 0 && (
-        <div className="space-y-2">
-          {alerts.map((alert, index) => (
-            <Alert
-              key={index}
-              type={alert.severity === "high" ? "error" : "warning"}
-              message={alert.message}
-            />
-          ))}
-        </div>
-      )}
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -143,62 +119,8 @@ const Dashboard = () => {
         </div>
 
         {/* Total Budget */}
-        <div className="card">
-          <div className="flex items-center">
-            <div className="flex-shrink-0">
-              <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-                <span className="text-green-600 text-sm">🎯</span>
-              </div>
-            </div>
-            <div className="ml-5 w-0 flex-1">
-              <dl>
-                <dt className="text-sm font-medium text-gray-500 truncate">
-                  Total Budget
-                </dt>
-                <dd className="text-lg font-medium text-gray-900">
-                  {budgetAnalytics?.summary
-                    ? formatCurrency(budgetAnalytics.summary.totalBudgeted)
-                    : "$0.00"}
-                </dd>
-                <dd className="text-xs text-gray-500">
-                  {budgetAnalytics?.summary
-                    ? `${budgetAnalytics.summary.activeBudgetCount} active budgets`
-                    : "0 budgets"}
-                </dd>
-              </dl>
-            </div>
-          </div>
-        </div>
 
         {/* Budget Remaining */}
-        <div className="card">
-          <div className="flex items-center">
-            <div className="flex-shrink-0">
-              <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
-                <span className="text-purple-600 text-sm">💰</span>
-              </div>
-            </div>
-            <div className="ml-5 w-0 flex-1">
-              <dl>
-                <dt className="text-sm font-medium text-gray-500 truncate">
-                  Budget Remaining
-                </dt>
-                <dd className="text-lg font-medium text-gray-900">
-                  {budgetAnalytics?.summary
-                    ? formatCurrency(budgetAnalytics.summary.totalRemaining)
-                    : "$0.00"}
-                </dd>
-                <dd className="text-xs text-gray-500">
-                  {budgetAnalytics?.summary?.overBudgetCount > 0 && (
-                    <span className="text-red-600">
-                      {budgetAnalytics.summary.overBudgetCount} over budget
-                    </span>
-                  )}
-                </dd>
-              </dl>
-            </div>
-          </div>
-        </div>
       </div>
 
       {/* Quick Actions */}
@@ -213,9 +135,6 @@ const Dashboard = () => {
           >
             Add Expense
           </button>
-          <Link to="/budgets" className="btn-secondary text-center">
-            Manage Budgets
-          </Link>
           <Link to="/analytics" className="btn-secondary text-center">
             View Analytics
           </Link>
@@ -226,65 +145,6 @@ const Dashboard = () => {
       </div>
 
       {/* Budget Overview */}
-      {budgetAnalytics?.budgets && budgetAnalytics.budgets.length > 0 && (
-        <div className="card">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-semibold text-gray-900">
-              Budget Overview
-            </h2>
-            <Link
-              to="/budgets"
-              className="text-primary-600 hover:text-primary-700 text-sm font-medium"
-            >
-              View All →
-            </Link>
-          </div>
-          <div className="space-y-4">
-            {budgetAnalytics.budgets.slice(0, 5).map((budget) => (
-              <div
-                key={budget.budgetId}
-                className="flex items-center justify-between"
-              >
-                <div className="flex-1">
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="text-sm font-medium text-gray-900">
-                      {budget.category}
-                    </span>
-                    <span className="text-sm text-gray-600">
-                      {formatCurrency(budget.actualSpent)} /{" "}
-                      {formatCurrency(budget.budgetAmount)}
-                    </span>
-                  </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div
-                      className={`h-2 rounded-full ${getProgressBarColor(
-                        budget.percentageUsed
-                      )}`}
-                      style={{
-                        width: `${Math.min(budget.percentageUsed, 100)}%`,
-                      }}
-                    ></div>
-                  </div>
-                  <div className="flex items-center justify-between mt-1">
-                    <span
-                      className={`text-xs font-medium ${getPercentageColor(
-                        budget.percentageUsed
-                      )}`}
-                    >
-                      {budget.percentageUsed.toFixed(1)}% used
-                    </span>
-                    {budget.isOverBudget && (
-                      <span className="text-xs text-red-600 font-medium">
-                        Over budget!
-                      </span>
-                    )}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
 
       {/* Category Breakdown */}
       {expenseAnalytics?.categoryBreakdown && (
@@ -384,8 +244,6 @@ const Dashboard = () => {
         onExpenseAdded={() => {
           setShowAddExpenseModal(false);
           getExpenseAnalytics("month");
-          getBudgetAnalytics();
-          getAlerts();
         }}
       />
     </div>

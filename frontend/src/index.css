@@ -1,6 +1,6 @@
 @import "tailwindcss";
 
-@layer components {
+/* @layer components {
   .btn-primary {
     @apply bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg transition-colors;
   }
@@ -16,4 +16,4 @@
   .card {
     @apply bg-white rounded-lg shadow-md p-6;
   }
-}
+} */
