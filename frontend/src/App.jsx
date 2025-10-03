@@ -43,9 +43,7 @@ const PublicRoute = ({ children }) => {
 const ProtectedLayout = ({ children }) => {
   return (
     <ProtectedRoute>
-      <ExpenseProvider>
-        {children}
-      </ExpenseProvider>
+      <ExpenseProvider>{children}</ExpenseProvider>
     </ProtectedRoute>
   );
 };
@@ -56,11 +54,12 @@ function AppContent() {
   if (loading) {
     return <LoadingSpinner />;
   }
-
   return (
     <div className="min-h-screen bg-gray-50">
       {user && <Navbar />}
-      <main className={`container mx-auto px-4 ${user ? "py-8" : ""}`}>
+      <main
+        className={`container mx-auto px-6 ${user ? "py-10" : ""} max-w-7xl`}
+      >
         <Routes>
           {/* Public Routes */}
           <Route
@@ -97,7 +96,7 @@ function AppContent() {
               </ProtectedLayout>
             }
           />
-          
+
           <Route
             path="/analytics"
             element={

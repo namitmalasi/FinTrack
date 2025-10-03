@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
 import Alert from "../components/common/Alert";
@@ -12,14 +12,12 @@ const Login = () => {
 
   const { login, error, loading, clearError } = useAuth();
 
-  useEffect(() => {
-    // Clear any existing errors when component mounts
-    clearError();
-  }, [clearError]);
-
   const { email, password } = formData;
 
   const handleChange = (e) => {
+    // Clear any existing errors when user starts typing
+    if (error) clearError();
+
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
@@ -42,21 +40,21 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         {/* Header */}
-        <div>
-          <div className="mx-auto h-12 w-12 bg-primary-600 rounded-lg flex items-center justify-center">
-            <span className="text-white font-bold text-xl">ET</span>
+        <div className="text-center">
+          <div className="mx-auto h-16 w-16 bg-gradient-to-br from-primary-600 to-primary-700 rounded-2xl flex items-center justify-center shadow-lg">
+            <span className="text-white font-bold text-2xl">ET</span>
           </div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
             Sign in to your account
           </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
+          <p className="mt-3 text-center text-base text-gray-600">
             Or{" "}
             <Link
               to="/register"
-              className="font-medium text-primary-600 hover:text-primary-500"
+              className="font-semibold text-primary-600 hover:text-primary-700 transition-colors"
             >
               create a new account
             </Link>
@@ -64,7 +62,10 @@ const Login = () => {
         </div>
 
         {/* Form */}
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+        <form
+          className="mt-10 space-y-6 bg-white p-8 rounded-2xl shadow-lg border border-gray-200"
+          onSubmit={handleSubmit}
+        >
           {error && <Alert type="error" message={error} onClose={clearError} />}
 
           <div className="space-y-4">
@@ -129,13 +130,13 @@ const Login = () => {
                 Forgot your password?
               </Link>
             </div>
-          </div>
+          </div> 
 
           <div>
             <button
               type="submit"
               disabled={loading || !email || !password}
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-primary-600 hover:bg-primary-700 active:bg-primary-800 text-black font-semibold px-6 py-3 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed text-base"
             >
               {loading ? "Signing in..." : "Sign in"}
             </button>

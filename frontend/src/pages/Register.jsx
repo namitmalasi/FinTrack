@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
 import Alert from "../components/common/Alert";
@@ -13,17 +13,17 @@ const Register = () => {
   });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [validationError, setValidationError] = useState("");
 
   const { register, error, loading, clearError } = useAuth();
-
-  useEffect(() => {
-    // Clear any existing errors when component mounts
-    clearError();
-  }, [clearError]);
 
   const { name, email, password, confirmPassword, currency } = formData;
 
   const handleChange = (e) => {
+    // Clear errors when user starts typing
+    if (error) clearError();
+    if (validationError) setValidationError("");
+
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
@@ -38,13 +38,12 @@ const Register = () => {
     }
 
     if (password !== confirmPassword) {
-      // You might want to add a local error state for this
-      alert("Passwords do not match");
+      setValidationError("Passwords do not match");
       return;
     }
 
     if (password.length < 6) {
-      alert("Password must be at least 6 characters");
+      setValidationError("Password must be at least 6 characters");
       return;
     }
 
@@ -67,21 +66,21 @@ const Register = () => {
   ];
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         {/* Header */}
-        <div>
-          <div className="mx-auto h-12 w-12 bg-primary-600 rounded-lg flex items-center justify-center">
-            <span className="text-white font-bold text-xl">ET</span>
+        <div className="text-center">
+          <div className="mx-auto h-16 w-16 bg-gradient-to-br from-primary-600 to-primary-700 rounded-2xl flex items-center justify-center shadow-lg">
+            <span className="text-white font-bold text-2xl">ET</span>
           </div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
             Create your account
           </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
+          <p className="mt-3 text-center text-base text-gray-600">
             Or{" "}
             <Link
               to="/login"
-              className="font-medium text-primary-600 hover:text-primary-500"
+              className="font-semibold text-primary-600 hover:text-primary-700 transition-colors"
             >
               sign in to existing account
             </Link>
@@ -89,14 +88,26 @@ const Register = () => {
         </div>
 
         {/* Form */}
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          {error && <Alert type="error" message={error} onClose={clearError} />}
+        <form
+          className="mt-10 space-y-6 bg-white p-8 rounded-2xl shadow-lg border border-gray-200"
+          onSubmit={handleSubmit}
+        >
+          {(error || validationError) && (
+            <Alert
+              type="error"
+              message={error || validationError}
+              onClose={() => {
+                clearError();
+                setValidationError("");
+              }}
+            />
+          )}
 
-          <div className="space-y-4">
+          <div className="space-y-5">
             <div>
               <label
                 htmlFor="name"
-                className="block text-sm font-medium text-gray-700"
+                className="block text-sm font-medium text-gray-700 mb-2"
               >
                 Full Name
               </label>
@@ -106,7 +117,7 @@ const Register = () => {
                 type="text"
                 autoComplete="name"
                 required
-                className="input-field mt-1"
+                className="input-field"
                 placeholder="Enter your full name"
                 value={name}
                 onChange={handleChange}
@@ -116,7 +127,7 @@ const Register = () => {
             <div>
               <label
                 htmlFor="email"
-                className="block text-sm font-medium text-gray-700"
+                className="block text-sm font-medium text-gray-700 mb-2"
               >
                 Email address
               </label>
@@ -126,7 +137,7 @@ const Register = () => {
                 type="email"
                 autoComplete="email"
                 required
-                className="input-field mt-1"
+                className="input-field"
                 placeholder="Enter your email"
                 value={email}
                 onChange={handleChange}
@@ -136,11 +147,11 @@ const Register = () => {
             <div>
               <label
                 htmlFor="password"
-                className="block text-sm font-medium text-gray-700"
+                className="block text-sm font-medium text-gray-700 mb-2"
               >
                 Password
               </label>
-              <div className="mt-1 relative">
+              <div className="relative">
                 <input
                   id="password"
                   name="password"
@@ -157,7 +168,7 @@ const Register = () => {
                   className="absolute inset-y-0 right-0 pr-3 flex items-center"
                   onClick={() => setShowPassword(!showPassword)}
                 >
-                  <span className="text-gray-400 hover:text-gray-600">
+                  <span className="text-gray-400 hover:text-gray-600 text-xl">
                     {showPassword ? "🙈" : "👁️"}
                   </span>
                 </button>
@@ -167,11 +178,11 @@ const Register = () => {
             <div>
               <label
                 htmlFor="confirmPassword"
-                className="block text-sm font-medium text-gray-700"
+                className="block text-sm font-medium text-gray-700 mb-2"
               >
                 Confirm Password
               </label>
-              <div className="mt-1 relative">
+              <div className="relative">
                 <input
                   id="confirmPassword"
                   name="confirmPassword"
@@ -188,7 +199,7 @@ const Register = () => {
                   className="absolute inset-y-0 right-0 pr-3 flex items-center"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                 >
-                  <span className="text-gray-400 hover:text-gray-600">
+                  <span className="text-gray-400 hover:text-gray-600 text-xl">
                     {showConfirmPassword ? "🙈" : "👁️"}
                   </span>
                 </button>
@@ -198,14 +209,14 @@ const Register = () => {
             <div>
               <label
                 htmlFor="currency"
-                className="block text-sm font-medium text-gray-700"
+                className="block text-sm font-medium text-gray-700 mb-2"
               >
                 Preferred Currency
               </label>
               <select
                 id="currency"
                 name="currency"
-                className="input-field mt-1"
+                className="input-field"
                 value={currency}
                 onChange={handleChange}
               >
@@ -224,7 +235,7 @@ const Register = () => {
               disabled={
                 loading || !name || !email || !password || !confirmPassword
               }
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-primary-600 hover:bg-primary-700 active:bg-primary-800 text-black font-semibold px-6 py-3 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed text-base"
             >
               {loading ? "Creating account..." : "Create account"}
             </button>

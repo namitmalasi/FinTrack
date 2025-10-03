@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 // frontend/src/pages/Expenses.js
 import { useEffect, useState } from "react";
 import { useExpenses } from "../context/ExpenseContext.jsx";
