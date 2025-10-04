@@ -12,9 +12,8 @@ dotenv.config({});
 // Middleware 
 app.use(cors({
   origin: [
-    'http://localhost:3000'
-    "https://fin-track-one-umber.vercel.app/"
-    ,
+     'https://fin-track-one-umber.vercel.app/'
+    
    ],
   credentials: true
 }));
