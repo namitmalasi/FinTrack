@@ -9,8 +9,15 @@ import budgetRoutes from "./routes/budgets.js";
 const app = express();
 
 dotenv.config({});
-// Middleware
-app.use(cors());
+// Middleware 
+app.use(cors({
+  origin: [
+    'http://localhost:3000'
+    "https://fin-track-one-umber.vercel.app/"
+    ,
+   ],
+  credentials: true
+}));
 app.use(express.json());
 
 // Routes
