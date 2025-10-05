@@ -11,38 +11,37 @@ const app = express();
 dotenv.config({});
 // Dynamic CORS Configuration
 const allowedOrigins = [
-  'http://localhost:3000',
-  'https://fin-track-one-umber.vercel.app'
+  "http://localhost:3000",
+  "https://fin-track-one-umber.vercel.app",
 ];
 
 const corsOptions = {
   origin: function (origin, callback) {
     // Allow requests with no origin (like mobile apps or curl requests)
     if (!origin) return callback(null, true);
-    
+
     // Check if the origin is in the allowed list
     if (allowedOrigins.includes(origin)) {
       callback(null, true);
-    } 
+    }
     // Allow all Vercel preview deployments
-    else if (origin.endsWith('.vercel.app')) {
+    else if (origin.endsWith(".vercel.app")) {
       callback(null, true);
-    } 
-    else {
-      callback(new Error('Not allowed by CORS'));
+    } else {
+      callback(new Error("Not allowed by CORS"));
     }
   },
   credentials: true,
   optionsSuccessStatus: 200,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
+  allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
 };
 
 // Apply CORS middleware BEFORE routes
 app.use(cors(corsOptions));
 
 // Handle preflight requests for all routes
-app.options('*', cors(corsOptions));
+app.options("*", cors(corsOptions));
 
 app.use(express.json());
 
@@ -63,7 +62,7 @@ app.use((err, req, res, next) => {
 });
 
 // 404 handler
-app.use(/(.*)/, (req, res) => {
+app.use((req, res) => {
   res.status(404).json({ message: "Route not found" });
 });
 
