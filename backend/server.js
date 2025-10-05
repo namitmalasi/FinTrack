@@ -9,14 +9,41 @@ import budgetRoutes from "./routes/budgets.js";
 const app = express();
 
 dotenv.config({});
-// Middleware 
-app.use(cors({
-  origin: [
-     'https://fin-track-one-umber.vercel.app/'
+// Dynamic CORS Configuration
+const allowedOrigins = [
+  'http://localhost:3000',
+  'https://fin-track-one-umber.vercel.app'
+];
+
+const corsOptions = {
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
     
-   ],
-  credentials: true
-}));
+    // Check if the origin is in the allowed list
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } 
+    // Allow all Vercel preview deployments
+    else if (origin.endsWith('.vercel.app')) {
+      callback(null, true);
+    } 
+    else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+  optionsSuccessStatus: 200,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
+};
+
+// Apply CORS middleware BEFORE routes
+app.use(cors(corsOptions));
+
+// Handle preflight requests for all routes
+app.options('*', cors(corsOptions));
+
 app.use(express.json());
 
 // Routes
